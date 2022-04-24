@@ -1,0 +1,137 @@
+<html>
+    <head>
+        <title>To do App</title>
+    </head>
+    <body>
+        <!-- As there is nothing betweent the opening and closing tags we can simply 
+        put <input type="text"/>-->
+        
+        <input id = "todo-title" type="text"></input>
+        <input id= "date-picker" type = "date"/>
+        <button onclick = "addTodo()">Add Todo</button>
+
+        <div id="todo-list"></div>
+        <script>
+            //Model  - manages all the data 
+
+            //If todos is saved in the local storage retreive data from it
+            //Otherwise use default array
+            let todos;
+            const savedTodos = JSON.parse(localStorage.getItem('todos'));
+            if (Array.isArray(savedTodos)){
+                todos = savedTodos;
+            }
+            else{
+                todos = [
+                {   title:"Get groceries",
+                    duedate:"2021-03-10",
+                    id:'id1'
+                },
+                {
+                    title:"Wash Car",
+                    duedate:"2021-05-14",
+                    id:'id2'
+                }, 
+                {
+                    title:"Buy Apples",
+                    duedate:"2021-12-15",
+                    id:'id3'
+                }];
+            }
+
+            render();
+
+            //Creates a todo
+            function createToDo(title,dueDate){
+                
+                const id = "" + new Date().getTime();
+
+                todos.push({
+                    title:title,
+                    duedate:dueDate,
+                    id: id
+                });
+
+                saveTodos();
+            }
+
+
+            //Deletes a todo 
+            function removeToDo(idToDelete){
+
+                todos = todos.filter(function(todo){
+                    //If the id of the todo matches the id of the idToDelete, return false
+                    //For everything else, return true
+                    if (todo.id === idToDelete){
+                        return false;
+                    }
+                    else{
+                        return true;
+                    }
+            });
+                saveTodos();
+            }
+
+            //save and retrieve 
+            function saveTodos(){
+                localStorage.setItem('todos', JSON.stringify(todos));
+            }
+
+            //Controller
+            function addTodo()
+            {
+                let textbox = document.getElementById('todo-title');
+                let title = textbox.value;
+
+                const datePicker = document.getElementById('date-picker');
+                const dueDate = datePicker.value;
+
+                createToDo(title,dueDate);
+
+                render();
+
+
+            }
+
+            function deleteTodo(event){
+                const delbutton = event.target;
+                const idToDelete = delbutton.id;
+                console.log(idToDelete);
+                
+            removeToDo(idToDelete);
+
+            render();
+            }
+
+            //View
+            function render(){
+                document.getElementById('todo-list').innerHTML = "";
+
+                todos.forEach(function(todo){
+                let element = document.createElement("div");
+                element.innerText = todo.title + " " + todo.duedate;
+                element.style = "margin-top:5px;"
+                let todoList = document.getElementById('todo-list');
+                todoList.appendChild(element);
+
+                const deleteButton = document.createElement("button");
+                deleteButton.innerText = "Delete";
+                deleteButton.style = "margin-left: 12px;";
+                deleteButton.id = todo.id;
+ 
+                element.appendChild(deleteButton);
+                deleteButton.onclick = deleteTodo; 
+
+                let updateButton = document.createElement('button');
+                updateButton.innerText = "Update";
+                updateButton.style = "margin-left:5px;";
+                element.appendChild(updateButton);
+
+
+
+            }); 
+        }   
+        </script>
+    </body>
+
+</html>
